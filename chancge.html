@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigo Invisível</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS para estilizar a página */
+
+        /* Estilos Gerais e Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Container Principal */
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        /* Cabeçalho */
+        header h1 {
+            font-family: 'Pacifico', cursive;
+            color: #d9534f; /* Vermelho festivo */
+            font-size: 3rem;
+            margin-bottom: 30px;
+        }
+        
+        /* Seções */
+        section {
+            margin-bottom: 25px;
+        }
+
+        h2 {
+            font-weight: 600;
+            color: #5cb85c; /* Verde festivo */
+            margin-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        /* Formulário de Adicionar Nomes */
+        .add-friends {
+            display: flex;
+            gap: 10px;
+        }
+
+        #nameInput {
+            flex-grow: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        #nameInput:focus {
+            outline: none;
+            border-color: #5cb85c;
+        }
+
+        #addButton {
+            padding: 0 25px;
+            border: none;
+            background-color: #5cb85c;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #addButton:hover {
+            background-color: #4a9d4a;
+        }
+
+        /* Lista de Participantes */
+        #list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        #list li {
+            background-color: #f9f9f9;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            border-left: 5px solid #d9534f;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        /* Botão de Sortear */
+        #drawButton {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            background-color: #d9534f;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        #drawButton:hover {
+            background-color: #c9302c;
+            transform: translateY(-2px);
+        }
+
+        /* Seção de Resultado */
+        .result-section {
+            margin-top: 30px;
+            min-height: 50px;
+        }
+
+        #result {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        #result span {
+            color: #d9534f;
+            background-color: #fcf8e3;
+            padding: 5px 10px;
+            border-radius: 8px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <main class="container">
+        <header>
+            <h1>Amigo Invisível</h1>
+        </header>
+
+        <section class="add-friends">
+            <input type="text" id="nameInput" placeholder="Digite o nome do participante">
+            <button id="addButton">Adicionar</button>
+        </section>
+
+        <section class="friends-list">
+            <h2>Participantes</h2>
+            <ul id="list">
+                </ul>
+        </section>
+
+        <section class="draw-section">
+            <button id="drawButton">Sortear Amigo!</button>
+        </section>
+
+        <section class="result-section">
+            <p id="result"></p>
+        </section>
+    </main>
+
+    <script>
+        // JavaScript para a funcionalidade da página
+
+        // 1. Pegar os elementos do HTML
+        const nameInput = document.getElementById('nameInput');
+        const addButton = document.getElementById('addButton');
+        const list = document.getElementById('list');
+        const drawButton = document.getElementById('drawButton');
+        const result = document.getElementById('result');
+
+        // 2. Criar uma lista (array) para guardar os nomes
+        let friends = [];
+
+        // 3. Função para mostrar a lista de nomes na tela
+        function renderFriendsList() {
+            // Limpa a lista antiga antes de mostrar a nova
+            list.innerHTML = '';
+            
+            // Cria um elemento <li> para cada nome na lista
+            friends.forEach(friend => {
+                const li = document.createElement('li');
+                li.textContent = friend;
+                list.appendChild(li);
+            });
+        }
+
+        // 4. Função para adicionar um novo nome
+        function addFriend() {
+            const name = nameInput.value.trim(); // Pega o nome e remove espaços em branco
+
+            if (name) { // Verifica se o campo não está vazio
+                friends.push(name); // Adiciona o nome à nossa lista
+                nameInput.value = ''; // Limpa o campo de texto
+                renderFriendsList(); // Atualiza a lista na tela
+            } else {
+                alert("Por favor, digite um nome.");
+            }
+        }
+
+        // 5. Função para realizar o sorteio
+        function drawFriend() {
+            if (friends.length < 2) {
+                result.innerHTML = "Adicione pelo menos 2 pessoas para sortear!";
+                return;
+            }
+
+            // Gera um número aleatório baseado no tamanho da lista
+            const randomIndex = Math.floor(Math.random() * friends.length);
+            
+            // Pega o nome sorteado
+            const drawnFriend = friends[randomIndex];
+
+            // Mostra o resultado na tela
+            result.innerHTML = `Seu amigo secreto é: <span>${drawnFriend}</span>`;
+        }
+
+        // 6. Adicionar os "escutadores de eventos" para os botões e a tecla Enter
+        addButton.addEventListener('click', addFriend);
+        drawButton.addEventListener('click', drawFriend);
+        
+        nameInput.addEventListener('keypress', function(event) {
+            // Se a tecla pressionada for "Enter"
+            if (event.key === 'Enter') {
+                addFriend();
+            }
+        });
+
+    </script>
+</body>
+</html>
